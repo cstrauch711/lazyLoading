@@ -1,0 +1,81 @@
+<style type="text/css">
+/* this style is used to represent a more difficult html rendering */
+	.special-div {
+		border: 2px solid #666;
+		border-radius: 20px;
+		padding: 10px 20px;
+		margin: 25px 20px;
+		box-shadow: 5px 10px #888888;
+	}
+</style>
+
+<!--the JavaScript comment is called upon when user scrolls-->
+<body onscroll="render()">
+	<!--the "myDiv" will contain all the div elements to be added and rendered-->
+	<div id="myDiv">
+	</div>
+</body>
+
+<script type="text/javascript">
+//this code loads elements in Div's and then renders them as the user scrolls down
+//this is the data for the elements that will be created later on. This oculd be potentially used for search and other things
+var a = []
+for (var i = 0; i < 250000; i++){
+	a.push('test '+i);
+}
+
+//this initial event listener will load an initial 50 divs and render them
+window.addEventListener('load', function(){
+	var mainDiv = document.getElementById('myDiv');
+	for (var i = 0; i < 50; i++){
+		var childDiv = document.createElement('div');
+		childDiv.innerHTML = a[i];
+		//first 50 divs will be rendered
+		childDiv.className = 'special-div';
+		mainDiv.appendChild(childDiv);
+	}
+}, false);
+
+//this will create the blank divs with <br> in them after waiting that will be rendered if the user scrolls down
+function loadMore(startIndex){
+	setTimeout(function(){
+		var mainDiv = document.getElementById('myDiv');
+		for (var i = startIndex; i < startIndex+10000; i++){
+			var childDiv = document.createElement('div');
+			childDiv.innerHTML = '<br></br>';
+			mainDiv.appendChild(childDiv);
+		}
+		loadMore(startIndex+10000);
+	}, 500)
+}
+//call the previous function to load the blank divs
+loadMore(50);
+
+//number represents the current div to be rendered, so it starts at 50 since the first 50 have already been rendered
+number = 50;
+var lastScrollTop = 0;//set initial amount user has scrolled to zero
+var c = document.getElementById("myDiv").childNodes;//create a list of childnodes to render the respective divs
+//when the user scrolls, this function will add more content divs to the myDiv. This is so new content is not being added when the user srolls up
+function render() {
+	var st = window.pageYOffset;
+	if ( st > lastScrollTop ){//only adds more content divs if user is scrolling down
+		if (number !== a.length) {
+			//this occurs 4 times to create a more seamless transition of scrolling
+			c[number].className = 'special-div';
+			c[number].innerHTML = a[number];
+			number = number + 1;
+			c[number].className = 'special-div';
+			c[number].innerHTML = a[number];
+			number = number + 1;
+			c[number].className = 'special-div';
+			c[number].innerHTML = a[number];
+			number = number + 1;
+			c[number].className = 'special-div';
+			c[number].innerHTML = a[number];
+			number = number + 1;
+		}
+		lastScrollTop = st;
+	}
+}
+
+</script>
