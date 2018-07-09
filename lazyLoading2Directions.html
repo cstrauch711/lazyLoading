@@ -1,0 +1,87 @@
+<style type="text/css">
+/* this style is used to represent a more difficult html rendering */
+	.special-div {
+		border: 2px solid #666;
+		border-radius: 20px;
+		padding: 10px 20px;
+		margin: 25px 20px;
+		box-shadow: 5px 10px #888888;
+	}
+</style>
+
+<!--the JavaScript comment is called upon when user scrolls-->
+<body onload="initialLoad()" onscroll="render()">
+	<!--the "myDiv" will contain all the div elements to be added and rendered-->
+	<div id="myDiv">
+	</div>
+</body>
+
+<script type="text/javascript">
+//this is the data set for the elements that will be created later on. This oculd be potentially used for search and other things
+var a = []
+for (var i = 0; i < 100000; i++){
+	a.push('TEST:  '+i);
+}
+
+var mainDiv = document.getElementById('myDiv');
+
+//this initial event listener will load and render an initial 50 divs to be displayed before loading more
+window.addEventListener('load', function(){
+	for (var i = 0; i < 50; i++){
+		var childDiv = document.createElement('div');
+		childDiv.innerHTML = a[i];
+		childDiv.className = 'special-div';
+		mainDiv.appendChild(childDiv);
+	}
+}, false);
+
+//this will create the blank divs after the initial 50 have already been loaded and rendered
+function loadMore(startIndex){
+	setTimeout(function(){
+		for (var i = startIndex; i < startIndex+10000; i++){
+			var childDiv = document.createElement('div');
+			childDiv.innerHTML = '<br></br>';
+			mainDiv.appendChild(childDiv);
+		}
+		loadMore(startIndex+10000);
+	}, 500)
+}
+loadMore(50);
+
+//TopNumber and BottomNumber represent the top and bottom divs that are loaded and rendered.
+//These should wrap around what is visible to the user and always have a difference of 50
+TopNumber = 0;//where to start rendering new elements
+BottomNumber = 49;
+
+var c = document.getElementById('myDiv').childNodes;
+//var distance = mainDiv.childNodes[BottomNumber].offsetTop;
+var lastScrollTop = 0;
+//when the user scrolls, this function will add more content divs to the myDiv. This is so new content is not being added when the user srolls up
+function render() {
+	var distance = window.pageYOffset;//this is the length the page has been scrolled vertically
+	if ( distance > lastScrollTop ){ //adds more content divs if user is scrolling down
+		//render new html elements and increase number
+		c[BottomNumber].className = 'special-div';
+		c[BottomNumber].innerHTML = a[BottomNumber];
+		//derender elements near the top of the page
+		c[TopNumber].className = '';
+		c[TopNumber].innerHTML = '<br></br>';
+		//set new variables for next scroll
+		BottomNumber = BottomNumber + 1;
+		TopNumber = TopNumber + 1;
+	}
+	else { //if scrolling upwards
+		//render new html elements when scrolling up
+		c[TopNumber].className = 'special-div';
+		c[TopNumber].innerHTML = a[TopNumber];
+		//derender elements near the bottom of the page
+		c[BottomNumber].className = 'special-div';
+		c[BottomNumber].innerHTML = '<br></br>';
+		//set new variables for next scroll
+		BottomNumber = BottomNumber - 1;
+		TopNumber = TopNumber - 1;
+	}
+	lastScrollTop = distance;
+}
+
+</script>
